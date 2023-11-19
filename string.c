@@ -97,7 +97,6 @@ String str_substr(String s, u32 start, u32 end, Arena *arena)
   return result;
 }
 
-
 String str_strip_front(String s, String substr, Arena *arena)
 {
   String result = s;
@@ -243,13 +242,13 @@ i64 str_find(String s, String substr)
         if (j == substr.len-1)
         {
           loc = i;
-          goto end;
+          goto exit;
         }
       }
     }
   }
 
-  end:
+  exit:
   return loc;
 }
 
@@ -307,15 +306,4 @@ u32 cstr_len(i8 *s)
   u32 len = 0;
   for (; s[len]; len++);
   return len+1;
-}
-
-void cstr_copy(String *dest, i8 *src)
-{
-  u32 len = cstr_len(src)-1;
-  for (u32 i = 0; i < len; i++)
-  {
-    dest->str[i] = src[i];
-  }
-  
-  dest->len = len;
 }
