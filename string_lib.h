@@ -1,12 +1,42 @@
-#include <stdio.h>
+#ifndef STRING_LIB_H
+#define STRING_LIB_H
 
-#include "common.h"
-#include "arena.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <assert.h>
+
+#include "arena_lib.h"
+
+typedef struct String String;
+typedef struct StringArray StringArray;
+
+struct String
+{
+  char *str;
+  uint32_t len;
+};
+
+struct StringArray
+{
+  String *e;
+  size_t count;
+};
+
+#define STR_NIL ((String) {NULL, 0})
+
+bool str_equals(String s1, String s2);
+
+uint32_t cstr_len(char *s)
+{
+  uint32_t len = 0;
+  for (; s[len]; len++);
+  return len+1;
+}
 
 // @String =====================================================================================
 
-String alloc_str(u32 len, Arena *arena)
+String alloc_str(uint32_t len, Arena *arena)
 {
   String result;
   result.str = arena_alloc(arena, len);
@@ -16,7 +46,7 @@ String alloc_str(u32 len, Arena *arena)
 }
 
 inline
-String str_lit(i8 *s)
+String str(char *s)
 {
   return (String) {s, cstr_len(s)-1};
 }
@@ -27,7 +57,7 @@ String str_copy(String s, Arena *arena)
   dest.str = arena_alloc(arena, s.len);
   dest.len = s.len;
 
-  for (u32 i = 0; i < s.len; i++)
+  for (uint32_t i = 0; i < s.len; i++)
   {
     dest.str[i] = s.str[i];
   }
@@ -40,7 +70,7 @@ String str_copy(String s, Arena *arena)
 
 String str_copy_to(String src, String *dest)
 {
-  for (u32 i = 0; i < src.len; i++)
+  for (uint32_t i = 0; i < src.len; i++)
   {
     dest->str[i] = src.str[i];
   }
@@ -50,12 +80,12 @@ String str_copy_to(String src, String *dest)
   return *dest;
 }
 
-String str_insert_at(String s, String substr, u32 loc)
+String str_insert_at(String s, String substr, uint32_t loc)
 {
-  ASSERT(loc + substr.len <= s.len);
+  assert(loc + substr.len <= s.len);
 
-  u32 dest_idx = loc;
-  for (u32 i = 0; i < substr.len; i++)
+  uint32_t dest_idx = loc;
+  for (uint32_t i = 0; i < substr.len; i++)
   {
     s.str[dest_idx] = substr.str[i];
     dest_idx++;
@@ -68,12 +98,12 @@ String str_concat(String s1, String s2, Arena *arena)
 {
   String result = alloc_str(s1.len + s2.len, arena);
 
-  for (u32 i = 0; i < s1.len; i++)
+  for (uint32_t i = 0; i < s1.len; i++)
   {
     result.str[i] = s1.str[i];
   }
 
-  for (u32 i = 0; i < s2.len; i++)
+  for (uint32_t i = 0; i < s2.len; i++)
   {
     result.str[i+s1.len] = s2.str[i];
   }
@@ -81,14 +111,14 @@ String str_concat(String s1, String s2, Arena *arena)
   return result;
 }
 
-String str_substr(String s, u32 start, u32 end, Arena *arena)
+String str_substr(String s, uint32_t start, uint32_t end, Arena *arena)
 {
-  ASSERT(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
+  assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
   String result = alloc_str(end-start, arena);
 
-  u32 result_idx = 0;
-  for (u32 i = start; i < end; i++)
+  uint32_t result_idx = 0;
+  for (uint32_t i = start; i < end; i++)
   {
     result.str[result_idx] = s.str[i];
     result_idx++;
@@ -102,7 +132,7 @@ String str_strip_front(String s, String substr, Arena *arena)
   String result = s;
   Arena scratch = get_scratch_arena(arena);
 
-  u32 front_len = substr.len;
+  uint32_t front_len = substr.len;
   String front = str_substr(s, 0, front_len, &scratch);
   if (str_equals(front, substr))
   {
@@ -120,7 +150,7 @@ String str_strip_back(String s, String substr, Arena *arena)
   String result = s;
   Arena scratch = get_scratch_arena(arena);
 
-  u32 end_len = s.len - substr.len;
+  uint32_t end_len = s.len - substr.len;
   String end = str_substr(s, end_len, s.len, &scratch);
   if (str_equals(end, substr))
   {
@@ -137,7 +167,7 @@ String str_nullify(String s, Arena *arena)
 {
   String result = alloc_str(s.len, arena);
 
-  for (u32 i = 0; i < result.len; i++)
+  for (uint32_t i = 0; i < result.len; i++)
   {
     result.str[i] = s.str[i];
   }
@@ -151,16 +181,16 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
 {
   String result = {0};
 
-  u32 total_len = (arr.count-1) * delimiter.len;
-  for (u32 i = 0; i < arr.count; i++)
+  uint32_t total_len = (arr.count-1) * delimiter.len;
+  for (uint32_t i = 0; i < arr.count; i++)
   {
     total_len += arr.e[i].len;
   }
 
   result = alloc_str(total_len, arena);
 
-  u32 start_offset = 0;
-  for (u32 i = 0; i < arr.count; i++)
+  uint32_t start_offset = 0;
+  for (uint32_t i = 0; i < arr.count; i++)
   {
     result = str_insert_at(result, arr.e[i], start_offset);
     start_offset += arr.e[i].len;
@@ -175,22 +205,17 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
   return result;
 }
 
-StringArray str_split(String s, String delimiter, Arena *arena)
-{
-  return (StringArray) {0};
-}
-
 bool str_equals(String s1, String s2)
 {
-  if (s1.len != s2.len) return FALSE;
+  if (s1.len != s2.len) return false;
 
-  bool equals = TRUE;
+  bool equals = true;
 
-  for (u32 i = 0; i < s1.len; i++)
+  for (uint32_t i = 0; i < s1.len; i++)
   {
     if (s1.str[i] != s2.str[i])
     {
-      equals = FALSE;
+      equals = false;
       break;
     }
   }
@@ -200,63 +225,61 @@ bool str_equals(String s1, String s2)
 
 bool str_contains(String s, String substr)
 {
-  if (s.len < substr.len) return FALSE;
+  if (s.len < substr.len) return false;
 
-  bool result = FALSE;
+  bool result = false;
 
-  for (u32 i = 0; i < s.len-substr.len+1; i++)
+  for (uint32_t i = 0; i < s.len-substr.len+1; i++)
   {
     if (s.str[i] == substr.str[0])
     {
-      for (u32 j = 0; j < substr.len; j++)
+      for (uint32_t j = 0; j < substr.len; j++)
       {
         if (s.str[i+j] != substr.str[j]) break;
 
         if (j == substr.len-1)
         {
-          result = TRUE;
-          goto exit;
+          result = true;
+          return result;
         }
       }
     }
   }
 
-  exit:
   return result;
 }
 
-i64 str_find(String s, String substr)
+int64_t str_find(String s, String substr)
 {
   if (s.len < substr.len) return -1;
 
-  i64 loc = -1;
+  int64_t result = -1;
 
-  for (u32 i = 0; i < s.len-substr.len+1; i++)
+  for (uint32_t i = 0; i < s.len-substr.len+1; i++)
   {
     if (s.str[i] == substr.str[0])
     {
-      for (u32 j = 1; j < substr.len; j++)
+      for (uint32_t j = 1; j < substr.len; j++)
       {
         if (s.str[i+j] != substr.str[j]) break;
 
         if (j == substr.len-1)
         {
-          loc = i;
-          goto exit;
+          result = i;
+          return result;
         }
       }
     }
   }
 
-  exit:
-  return loc;
+  return result;
 }
 
-i64 str_find_char(String s, i8 c)
+int64_t str_find_char(String s, char c)
 {
-  i64 loc = -1;
+  int64_t loc = -1;
 
-  for (u32 i = 0; i < s.len; i++)
+  for (uint32_t i = 0; i < s.len; i++)
   {
     if (s.str[i] == c)
     {
@@ -270,7 +293,7 @@ i64 str_find_char(String s, i8 c)
 
 void print_str(String s)
 {
-  for (u32 i = 0; i < s.len; i++)
+  for (uint32_t i = 0; i < s.len; i++)
   {
     printf("%c", s.str[i]);
   }
@@ -280,7 +303,7 @@ void print_str(String s)
 
 // @StringArray ================================================================================
 
-StringArray create_str_array(u64 count, Arena *arena)
+StringArray create_str_array(size_t count, Arena *arena)
 {
   StringArray arr = {0};
   arr.count = count;
@@ -291,7 +314,7 @@ StringArray create_str_array(u64 count, Arena *arena)
 
 void clear_str_array(StringArray *arr, Arena *arena)
 {
-  for (u64 i = 0; i < arr->count; i++)
+  for (size_t i = 0; i < arr->count; i++)
   {
     arr->e[i] = (String) {0};
   }
@@ -299,11 +322,4 @@ void clear_str_array(StringArray *arr, Arena *arena)
   arr->count = 0;
 }
 
-// @CString ====================================================================================
-
-u32 cstr_len(i8 *s)
-{
-  u32 len = 0;
-  for (; s[len]; len++);
-  return len+1;
-}
+#endif

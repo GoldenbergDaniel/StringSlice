@@ -1,0 +1,3 @@
+[submodule "ArenaAllocator"]
+	path = ArenaAllocator
+	url = https://github.com/GoldenbergDaniel/ArenaAllocator
