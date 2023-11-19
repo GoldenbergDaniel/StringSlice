@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#include "arena_lib.h"
+#include "ArenaAllocator/arena_lib.h"
 
 typedef struct String String;
 typedef struct StringArray StringArray;
