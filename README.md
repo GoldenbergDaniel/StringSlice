@@ -52,13 +52,13 @@ Returns true if the characters in `s1` match `s2`
 
 Returns true is `s` contains `substr`
 
-### `int64_t str_find(String s, String substr)`
+### `int64_t str_find(String s, String substr, uint32_t start)`
 
-Returns the index of the first instance of `substr` in `s`
+Returns the index of the first instance of `substr` in `s` starting at index `start`
 
-### `int64_t str_find_char(String s, char c)`
+### `int64_t str_find_char(String s, char c, uint32_t start)`
 
-Returns the index of the first instance of `c` in `s`
+Returns the index of the first instance of `c` in `s` starting at index `start`
 
 ### `String str_copy(String s, Arena *arena)`
 

@@ -53,6 +53,7 @@ struct StringArray
 // @CString ====================================================================================
 
 // Returns the length of a null-terminated string
+inline
 uint32_t cstr_len(char *s)
 {
   uint32_t len = 0;
@@ -118,14 +119,14 @@ bool str_contains(String s, String substr)
   return result;
 }
 
-// Returns the index of the first instance of `substr` in `s`
-int64_t str_find(String s, String substr)
+// Returns the index of the first instance of `substr` in `s` starting at index `start`
+int64_t str_find(String s, String substr, uint32_t start)
 {
-  if (s.len < substr.len) return -1;
+  if (s.len < substr.len || start >= s.len) return -1;
 
   int64_t result = -1;
 
-  for (uint32_t i = 0; i < s.len-substr.len+1; i++)
+  for (uint32_t i = start; i < s.len-substr.len+1; i++)
   {
     if (s.str[i] == substr.str[0])
     {
@@ -145,12 +146,14 @@ int64_t str_find(String s, String substr)
   return result;
 }
 
-// Returns the index of the first instance of `c` in `s`
-int64_t str_find_char(String s, char c)
+// Returns the index of the first instance of `c` in `s` starting at index `start`
+int64_t str_find_char(String s, char c, uint32_t start)
 {
+  if (start >= s.len) return false;
+
   int64_t result = -1;
 
-  for (uint32_t i = 0; i < s.len; i++)
+  for (uint32_t i = start; i < s.len; i++)
   {
     if (s.str[i] == c)
     {
