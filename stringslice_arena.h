@@ -24,8 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#ifndef STRING_LIB_H
-#define STRING_LIB_H
+#ifndef STRINGSLICE_H
+#define STRINGSLICE_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -91,7 +91,7 @@ String alloc_str(uint32_t len, Arena *arena)
 // Returns true if the characters in `s1` match `s2`
 ss_bool str_equals(String s1, String s2)
 {
-  if (s1.len != s2.len) return false;
+  if (s1.len != s2.len) return FALSE;
 
   ss_bool result = TRUE;
 
@@ -107,7 +107,7 @@ ss_bool str_equals(String s1, String s2)
   return result;
 }
 
-// Returns true is `s` contains `substr`
+// Returns true if `s` contains `substr`
 ss_bool str_contains(String s, String substr)
 {
   if (s.len < substr.len) return FALSE;
@@ -198,7 +198,7 @@ String str_copy(String s, Arena *arena)
 }
 
 // Copies `src` into `dest.` Expects `src.len <= dest.len`
-String str_copy_to(String src, String *dest)
+String str_copy_into(String src, String *dest)
 {
   assert(src.len <= dest->len);
 
@@ -250,7 +250,7 @@ String str_substr(String s, uint32_t start, uint32_t end, Arena *arena)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
-  String result = alloc_str(end-start, arena);
+  String result = alloc_str(end - start, arena);
 
   uint32_t result_idx = 0;
   for (uint32_t i = start; i < end; i++)
@@ -315,20 +315,6 @@ String str_nullify(String s, Arena *arena)
   return result;
 }
 
-// Replaces each lowercase character in `s` with an uppercase character
-String str_to_upper(String *s)
-{
-  for (uint32_t i = 0; i < s->len; i++)
-  {
-    if (s->str[i] >= 'a' && s->str[i] <= 'z')
-    {
-      s->str[i] -= 32;
-    }
-  }
-
-  return *s;
-}
-
 // Replaces each uppercase character in `s` with a lowercase character
 String str_to_lower(String *s)
 {
@@ -337,6 +323,20 @@ String str_to_lower(String *s)
     if (s->str[i] >= 'A' && s->str[i] <= 'Z')
     {
       s->str[i] += 32;
+    }
+  }
+
+  return *s;
+}
+
+// Replaces each lowercase character in `s` with an uppercase character
+String str_to_upper(String *s)
+{
+  for (uint32_t i = 0; i < s->len; i++)
+  {
+    if (s->str[i] >= 'a' && s->str[i] <= 'z')
+    {
+      s->str[i] -= 32;
     }
   }
 

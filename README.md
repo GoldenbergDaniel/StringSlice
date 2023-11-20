@@ -50,7 +50,7 @@ int main(void)
 
 `bool str_contains(String s, String substr)`
 
-- Returns true is `s` contains `substr`
+- Returns true if `s` contains `substr`
 
 `i64 str_find(String s, String substr, u32 start)`
 
@@ -64,7 +64,7 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Allocates and returns a copy of `s`
 
-`String str_copy_to(String src, String *dest)`
+`String str_copy_into(String src, String *dest)`
 
 - Copies `src` into `dest.` Expects `src.len <= dest.len`
 
@@ -96,7 +96,7 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Replaces each uppercase character in `s` with a lowercase character
 
-`String str_to_lower(String *s)`
+`String str_to_upper(String *s)`
 
 - Replaces each lowercase character in `s` with an uppercase character
 
