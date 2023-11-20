@@ -1,5 +1,7 @@
 # StringSlice
-A length-based string library for C. This is a work-in-progress project and has not been rigorously tested.
+Simple length-based string library for C. Ditch null termination for good. Note that the library has not been extensively tested and is still a work in progress. Use with caution.
+
+**Note:** StringSlice depends on my arena allocator library to work. Arenas offer a fast and hassle-free way to manage memory, especially useful for string operations which often require frequent allocations. The library is included as a git submodule. To learn more about arenas, see this awesome article by Ryan Fleury: www.rfleury.com/p/untangling-lifetimes-the-arena-allocator
 
 # Usage example
 ```c
