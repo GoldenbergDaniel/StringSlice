@@ -22,16 +22,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#pragma once
+
 #ifndef STRING_LIB_H
 #define STRING_LIB_H
 
 #include <stdio.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <assert.h>
 
 // NOTE: Replace with your path if needed
 #include "ArenaAllocator/arena_lib.h"
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef NULL
+#define NULL ((void *) 0)
+#endif
+
+typedef uint8_t ss_bool;
 
 typedef struct String String;
 typedef struct StringArray StringArray;
@@ -74,17 +89,17 @@ String alloc_str(uint32_t len, Arena *arena)
 }
 
 // Returns true if the characters in `s1` match `s2`
-bool str_equals(String s1, String s2)
+ss_bool str_equals(String s1, String s2)
 {
   if (s1.len != s2.len) return false;
 
-  bool result = true;
+  ss_bool result = TRUE;
 
   for (uint32_t i = 0; i < s1.len; i++)
   {
     if (s1.str[i] != s2.str[i])
     {
-      result = false;
+      result = FALSE;
       break;
     }
   }
@@ -93,11 +108,11 @@ bool str_equals(String s1, String s2)
 }
 
 // Returns true is `s` contains `substr`
-bool str_contains(String s, String substr)
+ss_bool str_contains(String s, String substr)
 {
-  if (s.len < substr.len) return false;
+  if (s.len < substr.len) return FALSE;
 
-  bool result = false;
+  ss_bool result = FALSE;
 
   for (uint32_t i = 0; i < s.len-substr.len+1; i++)
   {
@@ -109,7 +124,7 @@ bool str_contains(String s, String substr)
 
         if (j == substr.len-1)
         {
-          result = true;
+          result = TRUE;
           return result;
         }
       }
@@ -130,7 +145,7 @@ int64_t str_find(String s, String substr, uint32_t start)
   {
     if (s.str[i] == substr.str[0])
     {
-      for (uint32_t j = 1; j < substr.len; j++)
+      for (uint32_t j = 0; j < substr.len; j++)
       {
         if (s.str[i+j] != substr.str[j]) break;
 
@@ -149,7 +164,7 @@ int64_t str_find(String s, String substr, uint32_t start)
 // Returns the index of the first instance of `c` in `s` starting at index `start`
 int64_t str_find_char(String s, char c, uint32_t start)
 {
-  if (start >= s.len) return false;
+  if (start >= s.len) return FALSE;
 
   int64_t result = -1;
 
@@ -385,7 +400,7 @@ void clear_str_array(StringArray *arr, Arena *arena)
 {
   for (size_t i = 0; i < arr->count; i++)
   {
-    arr->e[i] = (String) {0};
+    arr->e[i] = str("");
   }
 
   arr->count = 0;
