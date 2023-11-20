@@ -69,13 +69,13 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Allocates and returns a copy of `s`
 
-`String str_copy_into(String src, String *dest)`
+`String str_copy_into(String *dest, String src)`
 
 - Copies `src` into `dest.` Expects `src.len <= dest.len`
 
 `String str_insert_at(String s, String substr, u64 loc)`
 
-- Inserts `substr` into `s` starting at index `loc.` Expects `loc + substr.len <= s.len`
+- Inserts `substr` into `s` at index `loc.` Expects `loc + substr.len <= s.len`
 
 `String str_concat(String s1, String s2, Arena *arena)`
 
@@ -83,7 +83,7 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 `String str_substr(String s, u64 start, u64 end, Arena *arena)`
 
-- Returns a substring of `s` starting at and including index `start` to ending at and excluding index `end.`
+- Returns a substring of `s` starting at index `start` and ending before index `end`
 
 `String str_strip_front(String s, String substr, Arena *arena)`
 

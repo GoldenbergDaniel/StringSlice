@@ -78,8 +78,9 @@ size_t cstr_len(char *s)
 
 // @String =====================================================================================
 
-// Allocates memory to str member and returns new string
-String alloc_str(size_t len, Arena *arena)
+// Allocates memory for str member and returns new string
+inline
+String ss_alloc_str(size_t len, Arena *arena)
 {
   String result;
   result.str = arena_alloc(arena, len);
@@ -183,9 +184,7 @@ int64_t str_find_char(String s, char c, size_t start)
 // Allocates and returns a copy of `s`
 String str_copy(String s, Arena *arena)
 {
-  String result = {0};
-  result.str = arena_alloc(arena, s.len);
-  result.len = s.len;
+  String result = ss_alloc_str(s.len, arena);
 
   for (size_t i = 0; i < s.len; i++)
   {
@@ -198,7 +197,7 @@ String str_copy(String s, Arena *arena)
 }
 
 // Copies `src` into `dest.` Expects `src.len <= dest.len`
-String str_copy_into(String src, String *dest)
+String str_copy_into(String *dest, String src)
 {
   assert(src.len <= dest->len);
 
@@ -212,7 +211,7 @@ String str_copy_into(String src, String *dest)
   return *dest;
 }
 
-// Inserts `substr` into `s` starting at index `loc.` Expects `loc + substr.len <= s.len`
+// Inserts `substr` into `s` at index `loc.` Expects `loc + substr.len <= s.len`
 String str_insert_at(String s, String substr, size_t loc)
 {
   assert(loc + substr.len <= s.len);
@@ -230,7 +229,7 @@ String str_insert_at(String s, String substr, size_t loc)
 // Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 String str_concat(String s1, String s2, Arena *arena)
 {
-  String result = alloc_str(s1.len + s2.len, arena);
+  String result = ss_alloc_str(s1.len + s2.len, arena);
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -245,12 +244,12 @@ String str_concat(String s1, String s2, Arena *arena)
   return result;
 }
 
-// Returns a substring of `s` starting at and including index `start` to ending at and excluding index `end.`
+// Returns a substring of `s` starting at index `start` and ending before index `end`
 String str_substr(String s, size_t start, size_t end, Arena *arena)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
-  String result = alloc_str(end - start, arena);
+  String result = ss_alloc_str(end - start, arena);
 
   size_t result_idx = 0;
   for (size_t i = start; i < end; i++)
@@ -265,6 +264,8 @@ String str_substr(String s, size_t start, size_t end, Arena *arena)
 // Returns a new string with the first `substr.len` characters of `s` removed if they equal `substr`
 String str_strip_front(String s, String substr, Arena *arena)
 {
+  assert(substr.len <= s.len);
+  
   String result = s;
   Arena scratch = get_scratch_arena(arena);
 
@@ -284,6 +285,8 @@ String str_strip_front(String s, String substr, Arena *arena)
 // Returns a new string with the last `substr.len` characters of `s` removed if they equal `substr`
 String str_strip_back(String s, String substr, Arena *arena)
 {
+  assert(substr.len <= s.len);
+
   String result = s;
   Arena scratch = get_scratch_arena(arena);
 
@@ -303,7 +306,7 @@ String str_strip_back(String s, String substr, Arena *arena)
 // Returns a new string with a null terminator appended to the end
 String str_nullify(String s, Arena *arena)
 {
-  String result = alloc_str(s.len, arena);
+  String result = ss_alloc_str(s.len, arena);
 
   for (size_t i = 0; i < result.len; i++)
   {
@@ -354,7 +357,7 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
     total_len += arr.e[i].len;
   }
 
-  result = alloc_str(total_len, arena);
+  result = ss_alloc_str(total_len, arena);
 
   size_t start_offset = 0;
   for (size_t i = 0; i < arr.count; i++)
