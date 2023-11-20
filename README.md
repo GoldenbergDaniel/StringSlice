@@ -36,11 +36,11 @@ int main(void)
 
 - Creates a string given a cstring literal
 
-`u32 cstr_len(i8 *s)`
+`u64 cstr_len(i8 *s)`
 
 - Returns the length of a null-terminated string
 
-`String alloc_str(u32 len, Arena *arena)`
+`String alloc_str(u64 len, Arena *arena)`
 
 - Allocates `len` bytes of memory to `str` field of `String` and returns new string
 
@@ -52,11 +52,11 @@ int main(void)
 
 - Returns true if `s` contains `substr`
 
-`i64 str_find(String s, String substr, u32 start)`
+`i64 str_find(String s, String substr, u64 start)`
 
 Returns the index of the first instance of `substr` in `s` starting at index `start`
 
-`i64 str_find_char(String s, i8 c, u32 start)`
+`i64 str_find_char(String s, i8 c, u64 start)`
 
 - Returns the index of the first instance of `c` in `s` starting at index `start`
 
@@ -68,7 +68,7 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Copies `src` into `dest.` Expects `src.len <= dest.len`
 
-`String str_insert_at(String s, String substr, u32 loc)`
+`String str_insert_at(String s, String substr, u64 loc)`
 
 - Inserts `substr` into `s` starting at index `loc.` Expects `loc + substr.len <= s.len`
 
@@ -76,7 +76,7 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 
-`String str_substr(String s, u32 start, u32 end, Arena *arena)`
+`String str_substr(String s, u64 start, u64 end, Arena *arena)`
 
 - Returns a substring of `s` starting at and including index `start` to ending at and excluding index `end.`
 
