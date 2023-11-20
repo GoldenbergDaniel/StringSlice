@@ -92,6 +92,14 @@ Returns a new string with the last `substr.len` characters of `s` removed if the
 
 Returns a new string with a null terminator appended to the end
 
+### `String str_to_lower(String *s)`
+
+Replaces each uppercase character in `s` with a lowercase character
+
+### `String str_to_lower(String *s)`
+
+Replaces each lowercase character in `s` with an uppercase character
+
 ### `String str_join(StringArray arr, String delimiter, Arena *arena)`
 
 Returns a new string consisting of each string in `arr`. `delimiter` added between each string

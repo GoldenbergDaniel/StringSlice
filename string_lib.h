@@ -297,6 +297,34 @@ String str_nullify(String s, Arena *arena)
   return result;
 }
 
+// Replaces each lowercase character in `s` with an uppercase character
+String str_to_upper(String *s)
+{
+  for (uint32_t i = 0; i < s->len; i++)
+  {
+    if (s->str[i] >= 'a' && s->str[i] <= 'z')
+    {
+      s->str[i] -= 32;
+    }
+  }
+
+  return *s;
+}
+
+// Replaces each uppercase character in `s` with a lowercase character
+String str_to_lower(String *s)
+{
+  for (uint32_t i = 0; i < s->len; i++)
+  {
+    if (s->str[i] >= 'A' && s->str[i] <= 'Z')
+    {
+      s->str[i] += 32;
+    }
+  }
+
+  return *s;
+}
+
 // Returns a new string consisting of each string in `arr`. `delimiter` added between each string
 String str_join(StringArray arr, String delimiter, Arena *arena)
 {
