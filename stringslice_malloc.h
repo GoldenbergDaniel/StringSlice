@@ -28,6 +28,7 @@ SOFTWARE.
 #define STRINGSLICE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
 

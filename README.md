@@ -3,6 +3,8 @@ Simple length-based string library for C. Ditch null termination for good. Note 
 
 **Note:** StringSlice depends on my arena allocator library. Arenas offer a fast and hassle-free way to manage memory, especially useful for string operations which often require frequent allocations. The library is included as a git submodule. To learn more about arenas, see this awesome article by Ryan Fleury: www.rfleury.com/p/untangling-lifetimes-the-arena-allocator
 
+If you do not want to use arenas, there is an option to use malloc-based allocations. Just make sure to select stringslice_malloc.h instead of stringslice_arena.h.
+
 # Usage example
 ```c
 #include <stdio.h>
@@ -30,6 +32,9 @@ int main(void)
   return 0;
 }
 ```
+
+# Memory Management
+There are two options for memory management: arena-based and malloc-based. The arena-based header is easy to work with. When a function needs to allocate memory, it takes an arena as an argument. See the usage sample for an example. Note that for the malloc-based header, (NOT IMPLEMENTED)
 
 # Documentation
 `str(s) ((String) {s, cstr_len(s)-1})`
