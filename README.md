@@ -6,7 +6,7 @@ Simple length-based string library for C. Ditch null termination for good. Note 
 # Usage example
 ```c
 #include <stdio.h>
-#include "string_lib.h"
+#include "stringslice.h"
 
 int main(void)
 {
