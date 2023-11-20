@@ -84,7 +84,7 @@ Returns a substring of `s` starting at and including index `start` to ending at 
 
 Returns a new string with the first `substr.len` characters of `s` removed if they equal `substr`
 
-### `String str_strip_back(String s, String substr, Arena *arena)``
+### `String str_strip_back(String s, String substr, Arena *arena)`
 
 Returns a new string with the last `substr.len` characters of `s` removed if they equal `substr`
 
