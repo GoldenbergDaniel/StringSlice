@@ -3,6 +3,9 @@ A length-based string library for C. This is a work-in-progress project and has 
 
 # Usage example
 ```c
+#include <stdio.h>
+#include "string_lib.h"
+
 int main(void)
 {
   Arena arena = create_arena(MiB(1));
@@ -47,7 +50,7 @@ Returns true if the characters in `s1` match `s2`
 
 Returns true is `s` contains `substr`
 
-`int64_t str_find(String s, String substr)`
+### `int64_t str_find(String s, String substr)`
 
 Returns the index of the first instance of `substr` in `s`
 
