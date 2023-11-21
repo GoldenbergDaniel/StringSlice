@@ -46,7 +46,7 @@ SOFTWARE.
 #define NULL ((void *) 0)
 #endif
 
-typedef uint8_t ss_bool;
+typedef uint8_t str_bool;
 
 typedef struct String String;
 struct String
@@ -89,11 +89,11 @@ String str_alloc(size_t len, Arena *arena)
 }
 
 // Returns true if the characters in `s1` match `s2`
-ss_bool str_equals(String s1, String s2)
+str_bool str_equals(String s1, String s2)
 {
   if (s1.len != s2.len) return FALSE;
 
-  ss_bool result = TRUE;
+  str_bool result = TRUE;
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -108,11 +108,11 @@ ss_bool str_equals(String s1, String s2)
 }
 
 // Returns true if `s` contains `substr`
-ss_bool str_contains(String s, String substr)
+str_bool str_contains(String s, String substr)
 {
   if (s.len < substr.len) return FALSE;
 
-  ss_bool result = FALSE;
+  str_bool result = FALSE;
 
   for (size_t i = 0; i < s.len-substr.len+1; i++)
   {
