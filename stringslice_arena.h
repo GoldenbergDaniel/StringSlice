@@ -27,7 +27,6 @@ SOFTWARE.
 #ifndef STRINGSLICE_H
 #define STRINGSLICE_H
 
-#include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
 
@@ -390,17 +389,6 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
   }
 
   return result;
-}
-
-// Prints string and a new line
-void str_print(String s)
-{
-  for (size_t i = 0; i < s.len; i++)
-  {
-    printf("%c", s.str[i]);
-  }
-
-  printf("\n");
 }
 
 // @StringArray ================================================================================
