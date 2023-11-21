@@ -393,7 +393,7 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
 }
 
 // Prints string and a new line
-void print_str(String s)
+void str_print(String s)
 {
   for (size_t i = 0; i < s.len; i++)
   {

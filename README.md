@@ -3,9 +3,9 @@ Simple length-based string library for C. Ditch null termination for good. Note 
 
 **Note:** StringSlice depends on my arena allocator library. Arenas offer a fast and hassle-free way to manage memory, especially useful for string operations which often require frequent allocations. The library is included as a git submodule. To learn more about arenas, see this awesome article by Ryan Fleury: www.rfleury.com/p/untangling-lifetimes-the-arena-allocator
 
-If you do not want to use arenas, there is an option to use malloc-based allocations. Just make sure to select stringslice_malloc.h instead of stringslice_arena.h.
+If you're not ready to switch to arenas, there is an option to use malloc-based allocations. Just make sure to select stringslice_malloc.h.
 
-# Usage example
+## Usage example
 ```c
 #include <stdio.h>
 #include "stringslice.h"
@@ -33,10 +33,10 @@ int main(void)
 }
 ```
 
-# Memory Management
-There are two options for memory management: arena-based and malloc-based. The arena-based header is easy to work with. When a function needs to allocate memory, it takes an arena as an argument. See the usage sample for an example. Note that for the malloc-based header, (NOT IMPLEMENTED)
+## Memory Management
+There are two options for memory management: arena-based and malloc-based allocation. The arena-based header is simple to work with. If a function needs to allocate memory, it takes an arena as an argument. This makes it easy to track which functions make allocations. In order to free the memory, you free the arena at the end of the group's lifetime. See the usage sample for an example. The malloc-based header has identical functions, but without any arena arguments. If a string was allocated on the heap, the `allocated` field gets flipped to true. This way you can simply pass every string into `str_free`, and only the ones allocated will be freed.
 
-# Documentation
+## Documentation
 `str(s) ((String) {s, cstr_len(s)-1})`
 
 - Creates a string given a cstring literal
@@ -45,9 +45,13 @@ There are two options for memory management: arena-based and malloc-based. The a
 
 - Returns the length of a null-terminated string
 
-`String alloc_str(u64 len, Arena *arena)`
+`String str_alloc(u64 len, Arena *arena)`
 
 - Allocates `len` bytes of memory to `str` field of `String` and returns new string
+
+`str_bool str_free(String *s)` (malloc header only)
+
+- If string was alloced, frees memory and returns true. Else, return false
 
 `String str_from_cstring(char *cstr)`
 
@@ -117,14 +121,10 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Splits `s` into substrings separated by `delimiter` and returns a `StringArray` (NOT IMPLEMENTED)
 
-`void print_str(String s)`
-
-- Prints string and a new line
-
-`StringArray create_str_array(size_t count, Arena *arena)`
+`StringArray str_create_array(size_t count, Arena *arena)`
 
 - Intializes and returns a new `StringArray` of size `count`
 
-`void clear_str_array(StringArray *arr, Arena *arena)`
+`void str_clear_array(StringArray *arr, Arena *arena)`
 
 - Clears `arr` and resets count to zero

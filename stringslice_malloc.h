@@ -27,7 +27,6 @@ SOFTWARE.
 #ifndef STRINGSLICE_H
 #define STRINGSLICE_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
@@ -44,14 +43,14 @@ SOFTWARE.
 #define NULL ((void *) 0)
 #endif
 
-typedef uint8_t ss_bool;
+typedef uint8_t str_bool;
 
 typedef struct String String;
 struct String
 {
   char *str;
   size_t len;
-  ss_bool allocated;
+  str_bool allocated;
 };
 
 typedef struct StringArray StringArray;
@@ -78,7 +77,7 @@ size_t cstr_len(char *s)
 
 // Allocates memory for str member and returns new string
 inline
-String ss_alloc_str(size_t len)
+String str_alloc(size_t len)
 {
   String result;
   result.str = malloc(len);
@@ -90,7 +89,7 @@ String ss_alloc_str(size_t len)
 
 // If string was alloced, frees memory and returns true. Else, return false
 inline
-ss_bool ss_free_str(String *s)
+str_bool str_free(String *s)
 {
   if (!s->allocated) return FALSE;
   
@@ -102,11 +101,11 @@ ss_bool ss_free_str(String *s)
 }
 
 // Returns true if the characters in `s1` match `s2`
-ss_bool str_equals(String s1, String s2)
+str_bool str_equals(String s1, String s2)
 {
   if (s1.len != s2.len) return FALSE;
 
-  ss_bool result = TRUE;
+  str_bool result = TRUE;
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -121,11 +120,11 @@ ss_bool str_equals(String s1, String s2)
 }
 
 // Returns true if `s` contains `substr`
-ss_bool str_contains(String s, String substr)
+str_bool str_contains(String s, String substr)
 {
   if (s.len < substr.len) return FALSE;
 
-  ss_bool result = FALSE;
+  str_bool result = FALSE;
 
   for (size_t i = 0; i < s.len-substr.len+1; i++)
   {
@@ -196,7 +195,7 @@ int64_t str_find_char(String s, char c, size_t start)
 // Allocates and returns a copy of `s`
 String str_copy(String s)
 {
-  String result = ss_alloc_str(s.len);
+  String result = str_alloc(s.len);
 
   for (size_t i = 0; i < s.len; i++)
   {
@@ -248,7 +247,7 @@ String str_from_cstring(char *cstr)
 // Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 String str_concat(String s1, String s2)
 {
-  String result = ss_alloc_str(s1.len + s2.len);
+  String result = str_alloc(s1.len + s2.len);
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -268,7 +267,7 @@ String str_substr(String s, size_t start, size_t end)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
-  String result = ss_alloc_str(end - start);
+  String result = str_alloc(end - start);
 
   size_t result_idx = 0;
   for (size_t i = start; i < end; i++)
@@ -295,7 +294,7 @@ String str_strip_front(String s, String substr)
     result.len = s.len-front_len;
   }
 
-  ss_free_str(&front);
+  str_free(&front);
   
   return result;
 }
@@ -315,7 +314,7 @@ String str_strip_back(String s, String substr)
     result.len = end_len;
   }
 
-  ss_free_str(&end);
+  str_free(&end);
   
   return result;
 }
@@ -323,7 +322,7 @@ String str_strip_back(String s, String substr)
 // Returns a new string with a null terminator appended to the end
 String str_nullify(String s)
 {
-  String result = ss_alloc_str(s.len);
+  String result = str_alloc(s.len);
 
   for (size_t i = 0; i < result.len; i++)
   {
@@ -338,7 +337,7 @@ String str_nullify(String s)
 // Returns a new string with each uppercase character in `s` a lowercase character
 String str_to_lower(String s)
 {
-  String result = ss_alloc_str(s.len);
+  String result = str_alloc(s.len);
 
   for (size_t i = 0; i < s.len; i++)
   {
@@ -358,7 +357,7 @@ String str_to_lower(String s)
 // Returns a new string with each lowercase character in `s` a uppercase character
 String str_to_upper(String s)
 {
-  String result = ss_alloc_str(s.len);
+  String result = str_alloc(s.len);
 
   for (size_t i = 0; i < s.len; i++)
   {
@@ -386,7 +385,7 @@ String str_join(StringArray arr, String delimiter)
     total_len += arr.e[i].len;
   }
 
-  result = ss_alloc_str(total_len);
+  result = str_alloc(total_len);
 
   size_t start_offset = 0;
   for (size_t i = 0; i < arr.count; i++)
@@ -404,21 +403,10 @@ String str_join(StringArray arr, String delimiter)
   return result;
 }
 
-// Prints string and a new line
-void print_str(String s)
-{
-  for (size_t i = 0; i < s.len; i++)
-  {
-    printf("%c", s.str[i]);
-  }
-
-  printf("\n");
-}
-
 // @StringArray ================================================================================
 
 // Intializes and returns a new `StringArray` of size `count`
-StringArray create_str_array(size_t count)
+StringArray str_create_array(size_t count)
 {
   StringArray arr = {0};
   arr.count = count;
@@ -428,7 +416,7 @@ StringArray create_str_array(size_t count)
 }
 
 // Clears `arr` and resets count to zero
-void clear_str_array(StringArray *arr)
+void str_clear_array(StringArray *arr)
 {
   for (size_t i = 0; i < arr->count; i++)
   {
