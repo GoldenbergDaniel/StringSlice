@@ -49,14 +49,13 @@ SOFTWARE.
 typedef uint8_t ss_bool;
 
 typedef struct String String;
-typedef struct StringArray StringArray;
-
 struct String
 {
   char *str;
   size_t len;
 };
 
+typedef struct StringArray StringArray;
 struct StringArray
 {
   String *e;
@@ -80,7 +79,7 @@ size_t cstr_len(char *s)
 
 // Allocates memory for str member and returns new string
 inline
-String ss_alloc_str(size_t len, Arena *arena)
+String str_alloc(size_t len, Arena *arena)
 {
   String result;
   result.str = arena_alloc(arena, len);
@@ -184,7 +183,7 @@ int64_t str_find_char(String s, char c, size_t start)
 // Allocates and returns a copy of `s`
 String str_copy(String s, Arena *arena)
 {
-  String result = ss_alloc_str(s.len, arena);
+  String result = str_alloc(s.len, arena);
 
   for (size_t i = 0; i < s.len; i++)
   {
@@ -196,7 +195,7 @@ String str_copy(String s, Arena *arena)
   return result;
 }
 
-// Copies `src` into `dest.` Expects `src.len <= dest.len`
+// Copies `src` into `dest.` Expects `dest` to be preallocated
 String str_copy_into(String *dest, String src)
 {
   assert(src.len <= dest->len);
@@ -211,7 +210,7 @@ String str_copy_into(String *dest, String src)
   return *dest;
 }
 
-// Inserts `substr` into `s` at index `loc.` Expects `loc + substr.len <= s.len`
+// Inserts `substr` into `s` at index `loc.` Expects `s` to be preallocated
 String str_insert_at(String s, String substr, size_t loc)
 {
   assert(loc + substr.len <= s.len);
@@ -226,10 +225,16 @@ String str_insert_at(String s, String substr, size_t loc)
   return s;
 }
 
+inline
+String str_from_cstring(char *cstr, Arena *arena)
+{
+  return str_copy(str(cstr), arena);
+}
+
 // Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 String str_concat(String s1, String s2, Arena *arena)
 {
-  String result = ss_alloc_str(s1.len + s2.len, arena);
+  String result = str_alloc(s1.len + s2.len, arena);
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -249,7 +254,7 @@ String str_substr(String s, size_t start, size_t end, Arena *arena)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
-  String result = ss_alloc_str(end - start, arena);
+  String result = str_alloc(end - start, arena);
 
   size_t result_idx = 0;
   for (size_t i = start; i < end; i++)
@@ -306,7 +311,7 @@ String str_strip_back(String s, String substr, Arena *arena)
 // Returns a new string with a null terminator appended to the end
 String str_nullify(String s, Arena *arena)
 {
-  String result = ss_alloc_str(s.len, arena);
+  String result = str_alloc(s.len, arena);
 
   for (size_t i = 0; i < result.len; i++)
   {
@@ -321,13 +326,17 @@ String str_nullify(String s, Arena *arena)
 // Returns a new string with each uppercase character in `s` a lowercase character
 String str_to_lower(String s, Arena *arena)
 {
-  String result = ss_alloc_str(s.len, arena);
+  String result = str_alloc(s.len, arena);
 
   for (size_t i = 0; i < s.len; i++)
   {
     if (s.str[i] >= 'A' && s.str[i] <= 'Z')
     {
-      result.str[i] += 32;
+      result.str[i] = s.str[i] + 32;
+    }
+    else
+    {
+      result.str[i] = s.str[i];
     }
   }
 
@@ -337,13 +346,17 @@ String str_to_lower(String s, Arena *arena)
 // Returns a new string with each lowercase character in `s` a uppercase character
 String str_to_upper(String s, Arena *arena)
 {
-  String result = ss_alloc_str(s.len, arena);
+  String result = str_alloc(s.len, arena);
 
   for (size_t i = 0; i < s.len; i++)
   {
     if (s.str[i] >= 'a' && s.str[i] <= 'z')
     {
-      result.str[i] -= 32;
+      result.str[i] = s.str[i] - 32;
+    }
+    else
+    {
+      result.str[i] = s.str[i];
     }
   }
 
@@ -361,7 +374,7 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
     total_len += arr.e[i].len;
   }
 
-  result = ss_alloc_str(total_len, arena);
+  result = str_alloc(total_len, arena);
 
   size_t start_offset = 0;
   for (size_t i = 0; i < arr.count; i++)
@@ -393,7 +406,7 @@ void print_str(String s)
 // @StringArray ================================================================================
 
 // Intializes and returns a new `StringArray` of size `count`
-StringArray create_str_array(size_t count, Arena *arena)
+StringArray str_create_array(size_t count, Arena *arena)
 {
   StringArray arr = {0};
   arr.count = count;
@@ -403,7 +416,7 @@ StringArray create_str_array(size_t count, Arena *arena)
 }
 
 // Clears `arr` and resets count to zero
-void clear_str_array(StringArray *arr, Arena *arena)
+void str_clear_array(StringArray *arr, Arena *arena)
 {
   for (size_t i = 0; i < arr->count; i++)
   {

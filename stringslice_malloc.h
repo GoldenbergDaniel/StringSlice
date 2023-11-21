@@ -238,6 +238,13 @@ String str_insert_at(String s, String substr, size_t loc)
   return s;
 }
 
+// Returns a copy of the `cstr` as a `String` 
+inline
+String str_from_cstring(char *cstr)
+{
+  return str_copy(str(cstr));
+}
+
 // Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 String str_concat(String s1, String s2)
 {
@@ -337,7 +344,11 @@ String str_to_lower(String s)
   {
     if (s.str[i] >= 'A' && s.str[i] <= 'Z')
     {
-      result.str[i] += 32;
+      result.str[i] = s.str[i] + 32;
+    }
+    else
+    {
+      result.str[i] = s.str[i];
     }
   }
 
@@ -353,7 +364,11 @@ String str_to_upper(String s)
   {
     if (s.str[i] >= 'a' && s.str[i] <= 'z')
     {
-      result.str[i] -= 32;
+      result.str[i] = s.str[i] - 32;
+    }
+    else
+    {
+      result.str[i] = s.str[i];
     }
   }
 

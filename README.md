@@ -16,11 +16,11 @@ int main(void)
 
   String string = str("Hello, ");
   string = str_concat(string, str("world"), &arena);
-  string = str_to_upper(&string);
+  string = str_to_upper(&string, &arena);
   long location = str_find(string, str("LLO"));
   printf("%li\n", location);
 
-  StringArray string_array = create_str_array(3, &arena);
+  StringArray string_array = str_create_array(3, &arena);
   string_array.e[0] = str("string");
   string_array.e[1] = str("slice"); 
   string_array.e[2] = str("library");
@@ -48,6 +48,10 @@ There are two options for memory management: arena-based and malloc-based. The a
 `String alloc_str(u64 len, Arena *arena)`
 
 - Allocates `len` bytes of memory to `str` field of `String` and returns new string
+
+`String str_from_cstring(char *cstr)`
+
+- Returns a copy of the `cstr` as a `String`
 
 `bool str_equals(String s1, String s2)`
 
