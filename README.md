@@ -97,13 +97,13 @@ Returns the index of the first instance of `substr` in `s` starting at index `st
 
 - Returns a new string with a null terminator appended to the end
 
-`String str_to_lower(String *s)`
+`String str_to_lower(String s, Arena *arena)`
 
-- Replaces each uppercase character in `s` with a lowercase character
+- Returns a new string with each uppercase character in `s` a lowercase character
 
-`String str_to_upper(String *s)`
+`String str_to_upper(String s, Arena *arena)`
 
-- Replaces each lowercase character in `s` with an uppercase character
+- Returns a new string with each lowercase character in `s` a uppercase character
 
 `String str_join(StringArray arr, String delimiter, Arena *arena)`
 

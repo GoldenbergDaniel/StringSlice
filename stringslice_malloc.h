@@ -328,32 +328,36 @@ String str_nullify(String s)
   return result;
 }
 
-// Replaces each uppercase character in `s` with a lowercase character
-String str_to_lower(String *s)
+// Returns a new string with each uppercase character in `s` a lowercase character
+String str_to_lower(String s)
 {
-  for (size_t i = 0; i < s->len; i++)
+  String result = ss_alloc_str(s.len);
+
+  for (size_t i = 0; i < s.len; i++)
   {
-    if (s->str[i] >= 'A' && s->str[i] <= 'Z')
+    if (s.str[i] >= 'A' && s.str[i] <= 'Z')
     {
-      s->str[i] += 32;
+      result.str[i] += 32;
     }
   }
 
-  return *s;
+  return result;
 }
 
-// Replaces each lowercase character in `s` with an uppercase character
-String str_to_upper(String *s)
+// Returns a new string with each lowercase character in `s` a uppercase character
+String str_to_upper(String s)
 {
-  for (size_t i = 0; i < s->len; i++)
+  String result = ss_alloc_str(s.len);
+
+  for (size_t i = 0; i < s.len; i++)
   {
-    if (s->str[i] >= 'a' && s->str[i] <= 'z')
+    if (s.str[i] >= 'a' && s.str[i] <= 'z')
     {
-      s->str[i] -= 32;
+      result.str[i] -= 32;
     }
   }
 
-  return *s;
+  return result;
 }
 
 // Returns a new string consisting of each string in `arr`. `delimiter` added between each string
