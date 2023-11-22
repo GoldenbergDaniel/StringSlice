@@ -1,9 +1,14 @@
 # StringSlice
-Simple length-based string library for C. Ditch null termination for good. Note that the library has not been extensively tested and is still a work in progress. Use with caution.
+Simple length-based string library for C. Ditch null termination for good. Note that the library is still a work in progress.
 
 **Note:** StringSlice depends on my arena allocator library. Arenas offer a fast and hassle-free way to manage memory, especially useful for string operations which often require frequent allocations. The library is included as a git submodule. To learn more about arenas, see this awesome article by Ryan Fleury: www.rfleury.com/p/untangling-lifetimes-the-arena-allocator
 
 If you're not ready to switch to arenas, there is an option to use malloc-based allocations. Just make sure to select stringslice_malloc.h.
+
+## Memory Management
+There are two options for memory management: arena-based and malloc-based allocation. The arena-based header is simple to work with. If a function needs to allocate memory, it takes an arena as an argument. This makes it easy to track which functions make allocations. In order to free the memory, you free the arena at the end of the group's lifetime. See the usage sample for an example. The malloc-based header has identical functions, but without any arena arguments. If a string was allocated on the heap, the `allocated` field gets flipped to true. This way you can simply pass every string into `str_free`, and only the ones allocated will be freed.
+
+You can swap out the arena allocator used by this library with your own implemention simply by defining `SS_ARENA_STRUCT` with your structure and `SS_ARENA_ALLOC` with your allocation function **before** you include the header. Alternatively, they may be changed from inside the library header.
 
 ## Usage example
 ```c
@@ -32,9 +37,6 @@ int main(void)
   return 0;
 }
 ```
-
-## Memory Management
-There are two options for memory management: arena-based and malloc-based allocation. The arena-based header is simple to work with. If a function needs to allocate memory, it takes an arena as an argument. This makes it easy to track which functions make allocations. In order to free the memory, you free the arena at the end of the group's lifetime. See the usage sample for an example. The malloc-based header has identical functions, but without any arena arguments. If a string was allocated on the heap, the `allocated` field gets flipped to true. This way you can simply pass every string into `str_free`, and only the ones allocated will be freed.
 
 ## Documentation
 `str(s) ((String) {s, cstr_len(s)-1})`
@@ -65,13 +67,13 @@ There are two options for memory management: arena-based and malloc-based alloca
 
 - Returns true if `s` contains `substr`
 
-`i64 str_find(String s, String substr, u64 start)`
+`i64 str_find(String s, String substr, u64 start, u64 end)`
 
-Returns the index of the first instance of `substr` in `s` starting at index `start`
+- Returns the index of the first instance of `substr` in `s` from index `start` to index `end`
 
-`i64 str_find_char(String s, i8 c, u64 start)`
+`i64 str_find_char(String s, i8 c, u64 start, u64 end)`
 
-- Returns the index of the first instance of `c` in `s` starting at index `start`
+- Returns the index of the first instance of `c` in `s` from index `start` to index `end`
 
 `String str_copy(String s, Arena *arena)`
 

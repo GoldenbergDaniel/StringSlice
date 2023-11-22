@@ -30,7 +30,7 @@ SOFTWARE.
 #include <stdint.h>
 #include <assert.h>
 
-// NOTE: Replace with your path if necessary
+// **Replace with your own path if necessary**
 #include "ArenaAllocator/arena_lib.h"
 
 #ifndef TRUE
@@ -45,7 +45,7 @@ SOFTWARE.
 #define NULL ((void *) 0)
 #endif
 
-typedef uint8_t str_bool;
+typedef uint8_t ss_bool;
 
 typedef struct String String;
 struct String
@@ -61,7 +61,11 @@ struct StringArray
   size_t count;
 };
 
-#define str(s) ((String) {s, cstr_len(s)-1})
+// **Replace with your own implementation if necessary**
+#ifndef SS_ARENA_STRUCT
+#define SS_ARENA_STRUCT Arena
+#define SS_ARENA_ALLOC(arena, len) arena_alloc(arena, len)
+#endif
 
 // @CString ====================================================================================
 
@@ -76,23 +80,25 @@ size_t cstr_len(char *s)
 
 // @String =====================================================================================
 
+#define str(s) ((String) {s, cstr_len(s)-1})
+
 // Allocates memory for str member and returns new string
 inline
-String str_alloc(size_t len, Arena *arena)
+String str_alloc(size_t len, SS_ARENA_STRUCT *arena)
 {
   String result;
-  result.str = arena_alloc(arena, len);
+  result.str = SS_ARENA_ALLOC(arena, len);
   result.len = len;
 
   return result;
 }
 
 // Returns true if the characters in `s1` match `s2`
-str_bool str_equals(String s1, String s2)
+ss_bool str_equals(String s1, String s2)
 {
   if (s1.len != s2.len) return FALSE;
 
-  str_bool result = TRUE;
+  ss_bool result = TRUE;
 
   for (size_t i = 0; i < s1.len; i++)
   {
@@ -107,11 +113,11 @@ str_bool str_equals(String s1, String s2)
 }
 
 // Returns true if `s` contains `substr`
-str_bool str_contains(String s, String substr)
+ss_bool str_contains(String s, String substr)
 {
   if (s.len < substr.len) return FALSE;
 
-  str_bool result = FALSE;
+  ss_bool result = FALSE;
 
   for (size_t i = 0; i < s.len-substr.len+1; i++)
   {
@@ -133,7 +139,7 @@ str_bool str_contains(String s, String substr)
   return result;
 }
 
-// Returns the index of the first instance of `substr` in `s` starting at index `start`
+// Returns the index of the first instance of `substr` in `s` from index `start` to index `end`
 int64_t str_find(String s, String substr, size_t start)
 {
   if (s.len < substr.len || start >= s.len) return -1;
@@ -160,7 +166,7 @@ int64_t str_find(String s, String substr, size_t start)
   return result;
 }
 
-// Returns the index of the first instance of `c` in `s` starting at index `start`
+// Returns the index of the first instance of `c` in `s` from index `start` to index `end`
 int64_t str_find_char(String s, char c, size_t start)
 {
   if (start >= s.len) return FALSE;
@@ -180,7 +186,7 @@ int64_t str_find_char(String s, char c, size_t start)
 }
 
 // Allocates and returns a copy of `s`
-String str_copy(String s, Arena *arena)
+String str_copy(String s, SS_ARENA_STRUCT *arena)
 {
   String result = str_alloc(s.len, arena);
 
@@ -225,13 +231,13 @@ String str_insert_at(String s, String substr, size_t loc)
 }
 
 inline
-String str_from_cstring(char *cstr, Arena *arena)
+String str_from_cstring(char *cstr, SS_ARENA_STRUCT *arena)
 {
   return str_copy(str(cstr), arena);
 }
 
 // Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
-String str_concat(String s1, String s2, Arena *arena)
+String str_concat(String s1, String s2, SS_ARENA_STRUCT *arena)
 {
   String result = str_alloc(s1.len + s2.len, arena);
 
@@ -249,7 +255,7 @@ String str_concat(String s1, String s2, Arena *arena)
 }
 
 // Returns a substring of `s` starting at index `start` and ending before index `end`
-String str_substr(String s, size_t start, size_t end, Arena *arena)
+String str_substr(String s, size_t start, size_t end, SS_ARENA_STRUCT *arena)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
 
@@ -266,7 +272,7 @@ String str_substr(String s, size_t start, size_t end, Arena *arena)
 }
 
 // Returns a new string with the first `substr.len` characters of `s` removed if they equal `substr`
-String str_strip_front(String s, String substr, Arena *arena)
+String str_strip_front(String s, String substr, SS_ARENA_STRUCT *arena)
 {
   assert(substr.len <= s.len);
   
@@ -287,7 +293,7 @@ String str_strip_front(String s, String substr, Arena *arena)
 }
 
 // Returns a new string with the last `substr.len` characters of `s` removed if they equal `substr`
-String str_strip_back(String s, String substr, Arena *arena)
+String str_strip_back(String s, String substr, SS_ARENA_STRUCT *arena)
 {
   assert(substr.len <= s.len);
 
@@ -308,7 +314,7 @@ String str_strip_back(String s, String substr, Arena *arena)
 }
 
 // Returns a new string with a null terminator appended to the end
-String str_nullify(String s, Arena *arena)
+String str_nullify(String s, SS_ARENA_STRUCT *arena)
 {
   String result = str_alloc(s.len, arena);
 
@@ -323,7 +329,7 @@ String str_nullify(String s, Arena *arena)
 }
 
 // Returns a new string with each uppercase character in `s` a lowercase character
-String str_to_lower(String s, Arena *arena)
+String str_to_lower(String s, SS_ARENA_STRUCT *arena)
 {
   String result = str_alloc(s.len, arena);
 
@@ -343,7 +349,7 @@ String str_to_lower(String s, Arena *arena)
 }
 
 // Returns a new string with each lowercase character in `s` a uppercase character
-String str_to_upper(String s, Arena *arena)
+String str_to_upper(String s, SS_ARENA_STRUCT *arena)
 {
   String result = str_alloc(s.len, arena);
 
@@ -363,7 +369,7 @@ String str_to_upper(String s, Arena *arena)
 }
 
 // Returns a new string consisting of each string in `arr`. `delimiter` added between each string
-String str_join(StringArray arr, String delimiter, Arena *arena)
+String str_join(StringArray arr, String delimiter, SS_ARENA_STRUCT *arena)
 {
   String result = {0};
 
@@ -394,7 +400,7 @@ String str_join(StringArray arr, String delimiter, Arena *arena)
 // @StringArray ================================================================================
 
 // Intializes and returns a new `StringArray` of size `count`
-StringArray str_create_array(size_t count, Arena *arena)
+StringArray str_create_array(size_t count, SS_ARENA_STRUCT *arena)
 {
   StringArray arr = {0};
   arr.count = count;
