@@ -61,10 +61,11 @@ struct StringArray
   size_t count;
 };
 
-// **Replace with your own implementation if necessary**
+// **Replace or overwrite with your own implementation if necessary**
 #ifndef SS_ARENA_STRUCT
 #define SS_ARENA_STRUCT Arena
 #define SS_ARENA_ALLOC(arena, len) arena_alloc(arena, len)
+#define SS_ARENA_GET_SCRATCH(arena) get_scratch_arena(arena)
 #endif
 
 // @CString ====================================================================================
@@ -200,34 +201,27 @@ String str_copy(String s, SS_ARENA_STRUCT *arena)
   return result;
 }
 
-// Copies `src` into `dest.` Expects `dest` to be preallocated
-String str_copy_into(String *dest, String src)
+// Returns a new string with `substr` inserted into `s` at index `loc`
+String str_insert_at(String s, String substr, size_t loc, Arena *arena)
 {
-  assert(src.len <= dest->len);
+  size_t len = s.len >= substr.len + loc ? s.len : substr.len + loc;
+  String result = str_alloc(len, arena);
 
-  for (size_t i = 0; i < src.len; i++)
+  size_t substr_idx = 0;
+  for (size_t i = 0; i < len; i++)
   {
-    dest->str[i] = src.str[i];
-  }
-  
-  dest->len = src.len;
-
-  return *dest;
-}
-
-// Inserts `substr` into `s` at index `loc.` Expects `s` to be preallocated
-String str_insert_at(String s, String substr, size_t loc)
-{
-  assert(loc + substr.len <= s.len);
-
-  size_t dest_idx = loc;
-  for (size_t i = 0; i < substr.len; i++)
-  {
-    s.str[dest_idx] = substr.str[i];
-    dest_idx++;
+    if (i >= loc && i < substr.len + loc)
+    {
+      result.str[i] = substr.str[substr_idx];
+      substr_idx++;
+    }
+    else
+    {
+      result.str[i] = s.str[i];
+    }
   }
 
-  return s;
+  return result;
 }
 
 inline
@@ -277,7 +271,7 @@ String str_strip_front(String s, String substr, SS_ARENA_STRUCT *arena)
   assert(substr.len <= s.len);
   
   String result = s;
-  Arena scratch = get_scratch_arena(arena);
+  Arena scratch = SS_ARENA_GET_SCRATCH(arena);
 
   size_t front_len = substr.len;
   String front = str_substr(s, 0, front_len, &scratch);
@@ -298,7 +292,7 @@ String str_strip_back(String s, String substr, SS_ARENA_STRUCT *arena)
   assert(substr.len <= s.len);
 
   String result = s;
-  Arena scratch = get_scratch_arena(arena);
+  Arena scratch = SS_ARENA_GET_SCRATCH(arena);
 
   size_t end_len = s.len - substr.len;
   String end = str_substr(s, end_len, s.len, &scratch);
@@ -372,6 +366,7 @@ String str_to_upper(String s, SS_ARENA_STRUCT *arena)
 String str_join(StringArray arr, String delimiter, SS_ARENA_STRUCT *arena)
 {
   String result = {0};
+  String temp = {0};
 
   size_t total_len = (arr.count-1) * delimiter.len;
   for (size_t i = 0; i < arr.count; i++)
@@ -381,18 +376,24 @@ String str_join(StringArray arr, String delimiter, SS_ARENA_STRUCT *arena)
 
   result = str_alloc(total_len, arena);
 
+  Arena scratch = SS_ARENA_GET_SCRATCH(arena);
+
   size_t start_offset = 0;
   for (size_t i = 0; i < arr.count; i++)
   {
-    result = str_insert_at(result, arr.e[i], start_offset);
+    temp = str_insert_at(temp, arr.e[i], start_offset, &scratch);
     start_offset += arr.e[i].len;
 
     if (i != arr.count-1)
     {
-      result = str_insert_at(result, delimiter, start_offset);
+      temp = str_insert_at(temp, delimiter, start_offset, &scratch);
       start_offset += delimiter.len;
     }
   }
+
+  result = str_copy(temp, arena);
+
+  clear_arena(&scratch);
 
   return result;
 }

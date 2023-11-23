@@ -51,9 +51,9 @@ int main(void)
 
 - Allocates `len` bytes of memory to `str` field of `String` and returns new string
 
-`str_bool str_free(String *s)` (malloc header only)
+`str_bool str_free(String *s)` (malloc only)
 
-- If string was alloced, frees memory and returns true. Else, return false
+- If string was alloced, frees memory and returns true. Otherwise returns false
 
 `String str_from_cstring(char *cstr)`
 
@@ -79,13 +79,9 @@ int main(void)
 
 - Allocates and returns a copy of `s`
 
-`String str_copy_into(String *dest, String src)`
+`String str_insert_at(String s, String substr, size_t loc, Arena *arena)`
 
-- Copies `src` into `dest.` Expects `src.len <= dest.len`
-
-`String str_insert_at(String s, String substr, u64 loc)`
-
-- Inserts `substr` into `s` at index `loc.` Expects `loc + substr.len <= s.len`
+- Returns a new string with `substr` inserted into `s` at index `loc`
 
 `String str_concat(String s1, String s2, Arena *arena)`
 
