@@ -266,25 +266,20 @@ String str_concat(String s1, String s2)
 String str_substr(String s, size_t start, size_t end)
 {
   assert(start >= 0 && start < s.len && end > 0 && end <= s.len && start < end);
-
-  String result = str_alloc(end - start);
-
-  size_t result_idx = 0;
-  for (size_t i = start; i < end; i++)
-  {
-    result.str[result_idx] = s.str[i];
-    result_idx++;
-  }
+  
+  String result = {0};
+  result.str = s.str + start;
+  result.len = end - start;
 
   return result;
 }
 
-// Returns a new string with the first `substr.len` characters of `s` removed if they equal `substr`
+// Returns a string slice with the first `substr.len` characters of `s` removed if they equal `substr`
 String str_strip_front(String s, String substr)
 {
   assert(substr.len <= s.len);
 
-  String result = s;
+  String result = {0};
 
   size_t front_len = substr.len;
   String front = str_substr(s, 0, front_len);
@@ -293,18 +288,16 @@ String str_strip_front(String s, String substr)
     result = str_substr(s, front_len, s.len);
     result.len = s.len-front_len;
   }
-
-  str_free(&front);
   
   return result;
 }
 
-// Returns a new string with the last `substr.len` characters of `s` removed if they equal `substr`
+// Returns a string slice with the last `substr.len` characters of `s` removed if they equal `substr`
 String str_strip_back(String s, String substr)
 {
   assert(substr.len <= s.len);
 
-  String result = s;
+  String result = {0};
 
   size_t end_len = s.len - substr.len;
   String end = str_substr(s, end_len, s.len);
@@ -313,8 +306,6 @@ String str_strip_back(String s, String substr)
     result = str_substr(s, 0, end_len);
     result.len = end_len;
   }
-
-  str_free(&end);
   
   return result;
 }

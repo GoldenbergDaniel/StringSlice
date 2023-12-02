@@ -22,6 +22,7 @@ int main(void)
   String string = str("Hello, ");
   string = str_concat(string, str("world"), &arena);
   string = str_to_upper(&string, &arena);
+  string = str_substr(&string, 1, 6);
   long location = str_find(string, str("LLO"));
   printf("%li\n", location);
 
@@ -87,17 +88,17 @@ int main(void)
 
 - Returns a new string combining `s1` and `s2` such that the characters of `s2` follow `s1`
 
-`String str_substr(String s, u64 start, u64 end, Arena *arena)`
+`String str_substr(String s, u64 start, u64 end)`
 
 - Returns a substring of `s` starting at index `start` and ending before index `end`
 
-`String str_strip_front(String s, String substr, Arena *arena)`
+`String str_strip_front(String s, String substr)`
 
-- Returns a new string with the first `substr.len` characters of `s` removed if they equal `substr`
+- Returns a substring of s with the first `substr.len` characters of `s` removed if they equal `substr`
 
-`String str_strip_back(String s, String substr, Arena *arena)`
+`String str_strip_back(String s, String substr)`
 
-- Returns a new string with the last `substr.len` characters of `s` removed if they equal `substr`
+- Returns a substring of s with the last `substr.len` characters of `s` removed if they equal `substr`
 
 `String str_nullify(String s, Arena *arena)`
 
